@@ -2,3 +2,9 @@ __pycache__/
 .idea/
 
 .DS_Store
+*.zip
+*.apk
+*.log
+*.disable
+*.json
+*.md
