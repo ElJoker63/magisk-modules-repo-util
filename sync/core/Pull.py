@@ -40,7 +40,15 @@ class Pull:
         return HttpUtils.download(url, out)
 
     def _check_changelog(self, module_id, file):
-        text = file.read_text()
+        try:
+            text = file.read_text(encoding='utf-8')
+        except UnicodeDecodeError:
+            try:
+                text = file.read_text(encoding='latin-1')
+            except UnicodeDecodeError:
+                self._log.w(f"_check_changelog: [{module_id}] -> unsupported encoding")
+                return False
+
         if StrUtils.is_html(text):
             self._log.w(f"_check_changelog: [{module_id}] -> unsupported type (html text)")
             return False
@@ -224,7 +232,6 @@ class Pull:
 
     def from_zip(self, track):
         zip_file = self._local_folder.joinpath(track.update_to)
-        changelog = self._local_folder.joinpath(track.changelog)
         last_modified = zip_file.stat().st_mtime
 
         if not zip_file.exists():
@@ -232,8 +239,11 @@ class Pull:
             self._log.i(f"from_zip: [{track.id}] -> {msg}")
             return None, 0.0
 
-        if not changelog.exists():
-            changelog = None
+        changelog = None
+        if track.changelog and track.changelog != "":
+            changelog_path = self._local_folder.joinpath(track.changelog)
+            if changelog_path.exists():
+                changelog = changelog_path
 
         online_module = self._from_zip_common(track.id, zip_file, changelog, delete_tmp=False)
         return online_module, last_modified

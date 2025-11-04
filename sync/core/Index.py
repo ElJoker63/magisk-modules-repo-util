@@ -101,6 +101,8 @@ class Index:
                 continue
 
             update_json = UpdateJson.load(update_json_file)
+            if not update_json.versions:
+                continue
             latest_item = update_json.versions[-1]
 
             zip_file = module_folder.joinpath(latest_item.zipfile_name)
