@@ -15,10 +15,8 @@ from zipfile import ZipFile
 def extract_module_id(zip_path):
     """
     Extract the module ID from module.prop inside the zip file.
-
     Args:
         zip_path (Path): Path to the zip file
-
     Returns:
         str: Module ID if found, None otherwise
     """
